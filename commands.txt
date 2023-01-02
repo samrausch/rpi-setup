@@ -4,3 +4,5 @@ apt-get install python3 python3-pip -y
 apt-get install apache2 -y
 apt-get install php -y
 apt-get install redis -y
+pip3 install redis
+echo "<?php print "hello world" ?>" >> /var/www/html/index.php
