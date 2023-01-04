@@ -4,5 +4,7 @@ apt-get install python3 python3-pip -y
 apt-get install apache2 -y
 apt-get install php -y
 apt-get install redis -y
+echo "Python/redis docs at https://github.com/redis/redis-py" >> /root/notes.txt
 pip3 install redis
 echo "<?php print "hello world" ?>" >> /var/www/html/index.php
+echo "alias ls=\"ls --color=auto\"" >> /etc/bash.bashrc
