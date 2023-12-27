@@ -8,3 +8,4 @@ echo "Python/redis docs at https://github.com/redis/redis-py" >> /root/notes.txt
 pip3 install redis
 echo "<?php print "hello world" ?>" >> /var/www/html/index.php
 echo "alias ls=\"ls --color=auto\"" >> /etc/bash.bashrc
+For monitoring, follow guide: https://www.instructables.com/Raspberry-Pi-Monitoring-System-Via-OLED-Display-Mo/
