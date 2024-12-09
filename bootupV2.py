@@ -2,7 +2,7 @@
 
 from multiprocessing import Process
 import socket
-import time
+import time, threading
 import datetime
 #import pytz
 import RPi.GPIO as GPIO
@@ -85,15 +85,15 @@ def get_ip():
 ipAddress = get_ip()
 
 def displayUpdate():
-    cmd = "service hostapd status | grep Active | cut -b 14-19"
-    hostapd_status = str(subprocess.check_output(cmd, shell = True ),'utf-8')
+    cmd = "service hostapd status | grep Active"
+    hostapd_status = str(subprocess.check_output(cmd, shell = True ),'utf-8').split(":")[1].split(" ")[1]
 
-    cmd = "service plexmediaserver status | grep Active | cut -b 14-19"
-    plex_status = str(subprocess.check_output(cmd, shell = True ),'utf-8')
+    cmd = "service plexmediaserver status | grep Active"
+    plex_status = str(subprocess.check_output(cmd, shell = True ),'utf-8').split(":")[1].split(" ")[1]
 
     draw.rectangle((0, 0, width, height), outline=0, fill=0)
     draw.text((x, top),"IP: "+ipAddress, font=font12, fill=255)
-    draw.text((x, top+12),"HostAPd: "+hostapd_status, font=font12, fill=255)
+    draw.text((x, top+12),"APd: "+hostapd_status, font=font12, fill=255)
     draw.text((x, top+24),"Plex: "+plex_status, font=font12, fill=255)
     draw.text((x, top+48),time.strftime("%H:%M:%S", time.localtime()), font=font12, fill=255)
     disp.image(image)
@@ -131,8 +131,12 @@ def displayUpdate():
         process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
         output, error = process.communicate()
         time.sleep(0.9)
+    threading.Timer(0.9, displayUpdate).start()
 
+#while True:
+#    if time.time() > displayUpdateLast + displayUpdateDelay:
+#        displayUpdate()
+#        displayUpdateLast = time.time()
+displayUpdate()
 while True:
-    if time.time() > displayUpdateLast + displayUpdateDelay:
-        displayUpdate()
-        displayUpdateLast = time.time()
+    time.sleep(0.01)
