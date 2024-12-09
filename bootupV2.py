@@ -9,6 +9,7 @@ import RPi.GPIO as GPIO
 import subprocess
 import os
 import Adafruit_SSD1306
+import pyudev
 
 from PIL import Image
 from PIL import ImageDraw
@@ -133,10 +134,35 @@ def displayUpdate():
         time.sleep(0.9)
     threading.Timer(0.9, displayUpdate).start()
 
+def monitorBlockDevices():
+    context = pyudev.Context()
+    monitor = pyudev.Monitor.from_netlink(context)
+    monitor.filter_by(subsystem='block')
+
+    for device in iter(monitor.poll, None):
+        if device.action == 'add':
+            print(device.device_node)
+            if device.device_node[-1].isdigit():
+                cmd = "mount "+device.device_node+" /mnt/usb"+device.device_node[-4:]
+                mount_status = str(subprocess.check_output(cmd, shell = True ),'utf-8')
+                print(mount_status)
+                break
+        if device.action == 'remove':
+            print(device.device_node)
+            if device.device_node[-1].isdigit():
+                cmd = "umount "+device.device_node
+                umount_status = str(subprocess.check_output(cmd, shell = True ),'utf-8')
+                print(umount_status)
+                break
+    threading.Timer(0.01, monitorBlockDevices).start()
+
+
+
 #while True:
 #    if time.time() > displayUpdateLast + displayUpdateDelay:
 #        displayUpdate()
 #        displayUpdateLast = time.time()
 displayUpdate()
+monitorBlockDevices()
 while True:
-    time.sleep(0.01)
+    time.sleep(0.001)
